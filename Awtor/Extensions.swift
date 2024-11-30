@@ -33,7 +33,7 @@ func signIn(_ provider: Any, ctrl: ViewController, completion: @escaping (String
         authApple(ctrl: ctrl, completion: completion)
     }
 }
-func authApple(ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {    
+func authApple(ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
     let authorizationProvider = ASAuthorizationAppleIDProvider()
     let request = authorizationProvider.createRequest()
     request.requestedScopes = [.email, .fullName]
@@ -42,6 +42,9 @@ func authApple(ctrl: ViewController, completion: @escaping (String?, String?) ->
     authorizationController.presentationContextProvider = ctrl
     authorizationController.performRequests()
     func handler(user: AppleUser?, error: String?) {
+        if (user == nil){
+            completion("", error)
+        }
         do {
             let jsonData = try JSONEncoder().encode(user)
             KeyChain.save(key: "userData", data: jsonData)
