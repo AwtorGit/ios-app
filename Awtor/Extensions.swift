@@ -82,7 +82,7 @@ struct AppleUser : Encodable{
     var fName: String?
     var lName: String?
     var identifier = ""
-    var accessToken: Data? = nil
+    var authorizationCode: Data? = nil
     var idToken: Data? = nil
 }
 var complitionHandler: ((AppleUser?, String?)->())?
@@ -104,7 +104,7 @@ extension ViewController: ASAuthorizationControllerDelegate {
         user.fName = appleIDCredential.fullName?.givenName
         user.lName = appleIDCredential.fullName?.familyName
         user.identifier = appleIDCredential.user
-        user.accessToken = appleIDCredential.authorizationCode
+        user.authorizationCode = appleIDCredential.authorizationCode
         user.idToken = appleIDCredential.identityToken
         complitionHandler?(user, nil)
         
