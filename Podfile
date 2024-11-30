@@ -7,7 +7,7 @@ target 'Awtor' do
 
   # Add the pod for Firebase Cloud Messaging
   pod 'Firebase/Messaging'
-
+  pod 'GoogleSignIn'
 end
 
 post_install do |installer|

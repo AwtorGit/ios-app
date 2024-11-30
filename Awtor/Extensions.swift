@@ -1,4 +1,5 @@
 import AuthenticationServices
+import GoogleSignIn
 
 typealias Extension = (Any, ViewController,
                        @escaping (String?, String?) -> ()) -> ();
@@ -12,25 +13,42 @@ enum LoginError: Error {
 }
 extension String: Error {}
 
-func signIn(_ provider: Any, ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
-    let authorizationProvider = ASAuthorizationAppleIDProvider()
-    let currentUser = KeyChain.load(key: "user")
-    if currentUser != nil {
-        let userId = String(data: currentUser!, encoding: .utf8)
-        authorizationProvider.getCredentialState(forUserID: userId!) { (state, error) in
-            switch state {
-            case .authorized:
-                let data = KeyChain.load(key: "userData");
-                let dataString = String(data: data!, encoding: .utf8)
-                completion(dataString, "")
-                break
-            default:
-                authApple(ctrl: ctrl, completion: completion)
-                break
+func signIn(_ provider: String, ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
+    switch provider{
+    case "apple":
+        
+        let authorizationProvider = ASAuthorizationAppleIDProvider()
+        let currentUser = KeyChain.load(key: "user")
+        if currentUser != nil {
+            let userId = String(data: currentUser!, encoding: .utf8)
+            authorizationProvider.getCredentialState(forUserID: userId!) { (state, error) in
+                switch state {
+                case .authorized:
+                    let data = KeyChain.load(key: "userData");
+                    let dataString = String(data: data!, encoding: .utf8)
+                    completion(dataString, "")
+                    break
+                default:
+                    authApple(ctrl: ctrl, completion: completion)
+                    break
+                }
             }
+        } else {
+            authApple(ctrl: ctrl, completion: completion)
         }
-    } else {
-        authApple(ctrl: ctrl, completion: completion)
+        break
+    case "google":
+        GIDSignIn.sharedInstance.signIn(withPresenting: ctrl) { (result, error) in
+            if error != nil {
+                completion("", error?.localizedDescription)
+                return
+            }
+            completion(result?.user.accessToken, nil)
+        }
+        break
+    default:
+        completion("", "Sign in with \(provider) is not implemented")
+        break
     }
 }
 func authApple(ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
@@ -44,6 +62,7 @@ func authApple(ctrl: ViewController, completion: @escaping (String?, String?) ->
     func handler(user: AppleUser?, error: String?) {
         if (user == nil){
             completion("", error)
+            return
         }
         do {
             let jsonData = try JSONEncoder().encode(user)
