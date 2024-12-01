@@ -120,5 +120,16 @@
 			<string>Saved Chonks</string>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>367509383184-3bpjkciv2d7s4mol82gc3jn79vijnmjj.apps.googleusercontent.com</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+           <string>com.googleusercontent.apps.367509383184-3bpjkciv2d7s4mol82gc3jn79vijnmjj</string>
+        </array>
+      </dict>
+    </array>
 </dict>
 </plist>
