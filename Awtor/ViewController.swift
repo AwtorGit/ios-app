@@ -245,9 +245,11 @@ extension ViewController: WKScriptMessageHandler {
             handleFCMToken()
         }
         if let ext = extensions[message.name] {
-            Task {
-                let result = ext(message.body, self) { result, error in
-                    Awtor.webView.evaluateJavaScript("this.dispatchEvent(new CustomEvent('\(message.name)', { detail: { result: '\(result!)', error: '\(error ?? "")' } }))")
+            if let provider = message.body as? String {
+                Task {
+                    let result = ext(provider, self) { result, error in
+                        Awtor.webView.evaluateJavaScript("this.dispatchEvent(new CustomEvent('\(message.name)', { detail: { result: '\(result!)', error: '\(error ?? "")' } }))")
+                    }
                 }
             }
         }
