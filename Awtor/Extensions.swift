@@ -62,7 +62,7 @@ extension ViewController: ASAuthorizationControllerDelegate {
             return
         }
 
-        complitionHandler?(appleIDCredential.identityToken, nil)
+        complitionHandler?(String(data: appleIDCredential.identityToken, encoding: .utf8), nil)
         
     }
     
