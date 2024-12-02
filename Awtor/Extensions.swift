@@ -1,7 +1,7 @@
 import AuthenticationServices
 import GoogleSignIn
 
-typealias Extension = (Any, ViewController,
+typealias Extension = (String, ViewController,
                        @escaping (String?, String?) -> ()) -> ();
 
 var extensions: [String: Extension] = [
@@ -62,7 +62,7 @@ extension ViewController: ASAuthorizationControllerDelegate {
             return
         }
 
-        complitionHandler?(String(data: appleIDCredential.identityToken, encoding: .utf8), nil)
+        complitionHandler?(String(data: appleIDCredential.identityToken!, encoding: .utf8), nil)
         
     }
     
