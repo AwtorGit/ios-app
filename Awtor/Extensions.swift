@@ -33,7 +33,7 @@ func authGoogle(ctrl: ViewController, completion: @escaping (String?, String?) -
             completion("", error?.localizedDescription)
             return
         }
-        completion(result?.user.idToken?.stringValue, nil)
+        completion(result?.user.idToken?.tokenString, nil)
     }
 }
 
@@ -45,17 +45,13 @@ func authApple(ctrl: ViewController, completion: @escaping (String?, String?) ->
     authorizationController.delegate = ctrl
     authorizationController.presentationContextProvider = ctrl
     authorizationController.performRequests()
-    func handler(user: AppleUser?, error: String?) {
-        if (user == nil){
-            completion("", error)
-            return
-        }
-        completion(user.idToken, "")
+    func handler(token: String?, error: String?) {
+        completion(token, error)
     }
     complitionHandler = handler
 }
 
-var complitionHandler: ((AppleUser?, String?)->())?
+var complitionHandler: ((String?, String?)->())?
 
 @available(iOS 13.0, *)
 extension ViewController: ASAuthorizationControllerDelegate {
