@@ -247,7 +247,7 @@ extension ViewController: WKScriptMessageHandler {
         if let ext = extensions[message.name] {
             if let provider = message.body as? String {
                 Task {
-                    let result = ext(provider, self) { result, error in
+                    ext(provider, self) { result, error in
                         Awtor.webView.evaluateJavaScript("this.dispatchEvent(new CustomEvent('\(message.name)', { detail: { result: '\(result!)', error: '\(error ?? "")' } }))")
                     }
                 }
