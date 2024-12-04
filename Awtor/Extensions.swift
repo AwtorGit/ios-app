@@ -41,9 +41,11 @@ func authGoogle(ctrl: ViewController, completion: @escaping (String?, String?) -
         }
         var user = User()
         user.idToken = result?.user.idToken?.tokenString
-        let jsonData = JSONEncoder().encode(user)
-        let jsonString = String(data: jsonData!, encoding: .utf8)
-        completion(jsonString, nil)
+        do {
+            let jsonData = try JSONEncoder().encode(user)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            completion(jsonString, nil)
+        } catch { }
     }
 }
 
@@ -56,9 +58,11 @@ func authApple(ctrl: ViewController, completion: @escaping (String?, String?) ->
     authorizationController.presentationContextProvider = ctrl
     authorizationController.performRequests()
     func handler(user: User?, error: String?) {
-        let jsonData = JSONEncoder().encode(user)
-        let jsonString = String(data: jsonData!, encoding: .utf8)
-        completion(jsonString, error)
+        do {
+            let jsonData = try JSONEncoder().encode(user)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            completion(jsonString, error)
+        } catch { }
     }
     complitionHandler = handler
 }
