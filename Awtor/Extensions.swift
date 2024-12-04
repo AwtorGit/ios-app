@@ -13,7 +13,7 @@ enum LoginError: Error {
 }
 extension String: Error {}
 
-func signIn(_ provider: String, ctrl: ViewController, completion: @escaping (User?, String?) -> ()) -> () {
+func signIn(_ provider: String, ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
     switch provider{
     case "apple":
         authApple(ctrl: ctrl, completion: completion)
@@ -39,7 +39,7 @@ func authGoogle(ctrl: ViewController, completion: @escaping (String?, String?) -
             completion("", error?.localizedDescription)
             return
         }
-        let user = User()
+        var user = User()
         user.idToken = result?.user.idToken?.tokenString
         let jsonData = try JSONEncoder().encode(user)
         let jsonString = String(data: jsonData, encoding: .utf8)
@@ -73,7 +73,7 @@ extension ViewController: ASAuthorizationControllerDelegate {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             return
         }
-        let user = User()
+        var user = User()
         user.idToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
         user.firstName = appleIDCredential.fullName?.givenName
         user.lastName = appleIDCredential.fullName?.familyName
