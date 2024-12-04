@@ -13,7 +13,7 @@ enum LoginError: Error {
 }
 extension String: Error {}
 
-func signIn(_ provider: String, ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
+func signIn(_ provider: String, ctrl: ViewController, completion: @escaping (User?, String?) -> ()) -> () {
     switch provider{
     case "apple":
         authApple(ctrl: ctrl, completion: completion)
@@ -27,13 +27,23 @@ func signIn(_ provider: String, ctrl: ViewController, completion: @escaping (Str
     }
 }
 
+struct User : Encodable{
+    var firstName: String?
+    var lastName: String?
+    var idToken: String?
+}
+
 func authGoogle(ctrl: ViewController, completion: @escaping (String?, String?) -> ()) -> () {
     GIDSignIn.sharedInstance.signIn(withPresenting: ctrl) { (result, error) in
         if error != nil {
             completion("", error?.localizedDescription)
             return
         }
-        completion(result?.user.idToken?.tokenString, nil)
+        let user = User()
+        user.idToken = result?.user.idToken?.tokenString
+        let jsonData = try JSONEncoder().encode(user)
+        let jsonString = String(data: jsonData, encoding: .utf8)
+        completion(jsonString, nil)
     }
 }
 
@@ -45,13 +55,15 @@ func authApple(ctrl: ViewController, completion: @escaping (String?, String?) ->
     authorizationController.delegate = ctrl
     authorizationController.presentationContextProvider = ctrl
     authorizationController.performRequests()
-    func handler(token: String?, error: String?) {
-        completion(token, error)
+    func handler(user: User?, error: String?) {
+        let jsonData = try JSONEncoder().encode(user)
+        let jsonString = String(data: jsonData, encoding: .utf8)
+        completion(jsonString, error)
     }
     complitionHandler = handler
 }
 
-var complitionHandler: ((String?, String?)->())?
+var complitionHandler: ((User?, String?)->())?
 
 @available(iOS 13.0, *)
 extension ViewController: ASAuthorizationControllerDelegate {
@@ -61,8 +73,11 @@ extension ViewController: ASAuthorizationControllerDelegate {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             return
         }
-
-        complitionHandler?(String(data: appleIDCredential.identityToken!, encoding: .utf8), nil)
+        let user = User()
+        user.idToken = String(data: appleIDCredential.identityToken!, encoding: .utf8)
+        user.firstName = appleIDCredential.fullName?.givenName
+        user.lastName = appleIDCredential.fullName?.familyName
+        complitionHandler?(user, nil)
         
     }
     
