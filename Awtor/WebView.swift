@@ -37,7 +37,7 @@ func createWebView(container: UIView, WKSMH: WKScriptMessageHandler, WKND: WKNav
     webView.scrollView.bounces = false
     webView.scrollView.contentInsetAdjustmentBehavior = .never
     webView.allowsBackForwardNavigationGestures = true
-    
+
     let deviceModel = UIDevice.current.model
     let osVersion = UIDevice.current.systemVersion
     webView.configuration.applicationNameForUserAgent = "Safari/604.1"
@@ -96,8 +96,7 @@ func calcWebviewFrame(webviewView: UIView, toolbarView: UIToolbar?) -> CGRect{
             #if targetEnvironment(macCatalyst)
             statusBarHeight = 29
             #endif
-            let windowHeight = webviewView.frame.height - statusBarHeight
-            return CGRect(x: 0, y: statusBarHeight, width: webviewView.frame.width, height: windowHeight)
+            return CGRect(x: 0, y: 0, width: webviewView.frame.width, height: webviewView.frame.height)
         }
     }
 }
@@ -369,5 +368,11 @@ extension ViewController: WKUIDelegate, WKDownloadDelegate {
 
         self.openFile(url: fileURL)
         completionHandler(fileURL)
+    }
+}
+
+class FullscreenWebView : WKWebView {
+    override var safeAreaInsets: UIEdgeInsets {
+        return .zero
     }
 }
